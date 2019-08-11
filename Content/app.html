@@ -1,0 +1,1038 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<script src="file:///android_asset/android.js"></script>
+  <link rel="stylesheet" href="onsen/onsenui.css">
+  <link rel="stylesheet" id="app-theme" href="onsen/onsen-css-components.min.css">
+  <script src="onsen/onsenui.min.js"></script>
+  <script src="jq.js"></script>
+  <script src="app.js"></script>
+  <script src="update.js"></script>
+  <script src="depend-from-used-programm.js"></script>
+  <script>
+	theme=localStorage.getItem("appTheme");
+	if(theme=="dark"){
+		$("#app-theme").attr("href","onsen/dark-onsen-css-components.min.css");
+	}
+	if(localStorage.getItem("APIinMenu")=="yes"){
+		$("#APImenuItem").css("display","block");
+	}
+  </script>
+  <meta charset="UTF-8">
+  <style>
+    	.answer{
+			word-wrap:break-word;
+			border:3px solid blue;
+			border-radius:10px;
+			}
+   </style>
+</head>
+<body id="body">
+  
+  
+  <ons-splitter>
+  <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+    <ons-page>
+    	<img src="logo.png" width="200px" style="padding:10% 10px 15% 10px">
+      <ons-list id="main-menu-list">
+        <ons-list-item onclick="fn.load('short.html')" tappable>
+          Сокращение
+        </ons-list-item>
+        <ons-list-item onclick="fn.load('links.html')" tappable>
+          Мои ссылки
+        </ons-list-item>
+        <ons-list-item onclick="fn.load('settings.html')" tappable>
+          Настройки
+        </ons-list-item>
+        <ons-list-item onclick="fn.load('help.html')" tappable>
+          Помощь
+        </ons-list-item>
+		<ons-list-item onclick="fn.load('api.html')" id="APImenuItem" style="display:none" tappable>
+			API от Q32
+		</ons-list-item>
+      </ons-list>
+	  
+	  <p style="text-align:center;opacity:0.4;font-weight:bold">v <span  id='appVer'>1.1.3</span></p>
+	  
+	</ons-page>
+  </ons-splitter-side>
+  <ons-splitter-content id="content" page="short.html"></ons-splitter-content>
+</ons-splitter>
+
+<template id="short.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Сокращение ссылок
+      </div>
+    </ons-toolbar>
+    
+	
+  <div style="text-align: center; margin:30px auto;max-width:90%">
+    <p>
+      <ons-input id="fullLink" modifier="underbar" type="text" placeholder="Ссылка для сокращения" style="width:100%" float></ons-input>
+    </p>
+	
+	<div style="display:block;height:52px;margin-top:15px;" id="switchBlock">
+		<div class="center" style="display:inline-block;padding-right:30%">
+        Доп. параметры
+      </div>
+	  
+	  <div class="right" style="display:inline-block">
+  		<ons-switch onclick="showAdditional()" id="additionalSwitch"  ></ons-switch>
+      </div>
+	</div>
+	
+	<script>
+		$(function(){
+			if(localStorage.getItem("additional")=="yes"){
+				$("#additionalSwitch").children()[0].checked=true;
+				$("#additionalParams").css("display","block");
+			}
+		});
+		
+	</script>
+		
+	<div id="additionalParams" style="display:none">
+		<p>
+			<ons-input id="nameLink" modifier="underbar" type="text" placeholder="Название" style="width:100%" float></ons-input>
+		</p>
+		<p>
+			<ons-input id="descLink" modifier="underbar" type="text" placeholder="Описание" style="width:100%" float></ons-input>
+		</p>
+		<ons-button modifier='large' onclick='showDialog("chooseDomain")'>Выбрать домен </ons-button>	
+			<ons-dialog id='chooseDomain' cancelable>
+				<div style='text-align: center; padding: 10px;' >
+					<ons-list id='getDomainsSelect'>
+						
+					</ons-list>
+				</div>
+			</ons-dialog>
+			<ons-button style='margin-top:15px;' modifier='large' onclick='showDialog("chooseDir")'>Выбрать папку</ons-button>
+			<ons-dialog id='chooseDir' cancelable>
+				<div style='text-align: center; padding: 10px;'>
+					<ons-list id='getDirsSelect'></ons-list>
+				</div>
+			</ons-dialog>
+	</div>
+	
+    <p style="margin-top: 30px;">
+      <ons-button style="text-align: center" modifier="large" onclick="shortIt()">Сократить</ons-button>
+    </p>
+	
+	<div id="wait-loading" style="display:none;text-align:center">
+		Подождите...<br>
+		<ons-icon size="50px" spin icon="md-spinner"></ons-icon>
+	</div>
+	
+	<div id="short" style="display:none;margin-top:30px">
+		Результат:<br>
+		<textarea onclick="this.select()" id="shortenedLink" class="textarea" style="font-size:30px" rows="1" readonly></textarea>
+		<ons-button modifier="large" onclick="copyToClipboard('shortLink')">Скопировать ссылку</ons-button>
+	</div>
+	
+  </div>
+	
+  </ons-page>
+</template>
+
+<template id="links.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div id="linksTitle" class="center">
+        Мои ссылки
+      </div>
+    </ons-toolbar>
+	<div id="wait-loading" style="display:block;text-align:center;margin-top:20px">
+			Подождите...<br>
+			<ons-icon size="50px" spin icon="md-spinner"></ons-icon>
+	</div>
+	<div id="myLinksContent" style="text-align: center; margin:5% auto;max-width:90%;max-height:80%;overflow:scroll">
+		<ons-list id="ListOfMyLinks"></ons-list>
+	</div>
+	
+	<div id="linksDialogs"></div>
+	<div id="pageFabs" style="text-align: center; margin:1px auto;max-width:90%;"></div>
+	<script>
+		requestAllCategories("mylinks");
+		if(LinksInDir.length!=0){
+			LinksInDir.splice(0,LinksInDir.length)
+		}
+	</script>
+  
+  </ons-page>
+</template>
+
+<template id="settings.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Настройки
+      </div>
+    </ons-toolbar>
+	
+	<ons-list>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('app-settings.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Настройки приложения</b></span><span class="list-item__subtitle">Различные настройки приложения, вроде отображения доп. пунктов, очистки данных и т.д.</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('api-settings.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Настройки API-ключа</b></span><span class="list-item__subtitle">Отображение, его изменение и удаление</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('dir-settings.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Настройки папок</b></span><span class="list-item__subtitle">Создание, переименование и удаление</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="check4Updates('user')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Проверить обновление</b></span><span class="list-item__subtitle">Проверка обновлений приложения. Можно включить автоматическую проверку в настройках приложения.</span>
+			</div>
+		</ons-list-item>
+		
+	</ons-list>
+  </ons-page>
+</template>
+
+<template id="help.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Помощь
+      </div>
+    </ons-toolbar>
+	
+	<ons-list>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('novice.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Новичкам</b></span><span class="list-item__subtitle">Информация о сервисе, включая расценки</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('faq.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>FAQ</b></span><span class="list-item__subtitle">Инструкции в форме вопрос-ответ</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('about.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>О приложении</b></span><span class="list-item__subtitle">Информация о приложении+некоторые ссылки</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('feedback.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Обратная связь</b></span><span class="list-item__subtitle">Возможность написать отзыв, сообщить о проблеме, предложить какую-нибудь фичу :)</span>
+			</div>
+		</ons-list-item>
+		
+		<ons-list-item modifier="chevron" onclick="fn.load('future.html')" tappable>
+			<div class="center">
+				<span class="list-item__title"><b>Запланированные возможности</b></span><span class="list-item__subtitle">Вы можете посмотреть, какие идеи есть на счет разработки и проголосовать ЗА или ПРОТИВ какой либо из возможностей</span>
+			</div>
+		</ons-list-item>
+		
+	</ons-list>
+	
+  </ons-page>
+</template>
+
+<template id="api-short.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Сокращение
+      </div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+	<b>Минимальный запрос: </b>http://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>url=</font><font color=red>http://somewebsite.com</font><br>
+	Да, чтобы сократить ссылку как минимум нам нужна ссылка и наш API-ключ. Если не указывать остальные параметры, то ответ по умолчанию прийдет в текстовом режиме и будет содержать только сокращенную ссылку. С моим ключом ответ по минимальному запросу выше был такой: <br>
+	http://q32.pw/bjAJ<br>
+	Однако на формат ответа можно повлиять, для этого есть параметр <font color=green>format=</font> со значением <font color=red>json</font> или <font color=red>text</font>
+	В итоге по запросу<br> 
+	<div class="answer">http://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>url=</font><font color=red>http://somewebsite.com</font>&<font color=green>format=</font><font color=red>json</font></div><br>
+	был следующий ответ:<br>
+	<div class='answer'>
+	{"link":"http:\/\/somewebsite.com","title":"","short_link":"http:\/\/q32.pw\/bjAJ"}</div>
+	В ответе нам приходят ссылка-оригинал, полученное название и сама короткая ссылка. К слову о названии - чтобы его задать вручную используется параметр <font color=green>title=</font><font color=red>название</font>. Иначе сервер проверит что за страница находится по ссылке и попытается получить название у нее. В этом случае у вас могут получиться кракозябры в названии(предположительно из за разницы в кодировках), чтобы понять о чем я попробуйте сократить ссылку <b>learn.javascript.ru</b><br>
+	Остальные параметры:<br>
+	<font color=green>description=</font><font color=red>описание</font><br>
+	<font color=green>domain=</font><font color=red>домен</font> - фактически у каждого выбор из двух доменов - q32.ru и q32.pw, но если у вас есть свой сайт, то Q32 предоставляет возможность добавить ваш домен, и тогда вы сможете сокращать ссылки по адресу вроде go.domain.com/SuoL. Как это сделать смотрите на сайте: <b>Раздел Инструменты, вкладка Домены</b><br>
+	<font color=green>folder=</font><font color=red>id папки</font> - тоже немаловажный параметр, если вы собираетесь основательно пользоваться сервисом. Хоть вложенных папок делать и не дают, но рассортировать все по нескольким полочкам будет полезно :) соответственно id папки можно узнать посмотрев на сайте в адресную строку. Когда вы в разделе "Ссылки" у вас отображается либо только "Без категории", либо дополнительные папки. При переключении между ними меняется и адрес, а последним в адресе как раз и стоит нужный нам id папки. Например<br>
+	https://q32.link/office/?folder=55998 => id=55998<br>
+	https://q32.link/office/?folder=0 => id=0(у папки без категории)<br>
+	Помимо этого можно будет получить список папок через определенный метод, который будет описан в дальнейшем.<br>
+	Итого полный запрос со всеми параметрами будет таким:<br>
+	<div class="answer">http://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>url=</font><font color=red>http://somewebsite.com</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>title=</font><font color=red>NekotoroeNazvanie</font>&<font color=green>description=</font><font color=red>opisanie</font>&<font color=green>domain=</font><font color=red>q32.ru</font>&<font color=green>folder=</font><font color=red>0</font></div><br>
+	Кстати говоря, порядок дополнительных параметров в запросе не важен. Ответ на запрос будет содержать те же данные что и при ответе на минимальный по параметрам запрос - исходную ссылку, название и короткую ссылку(в JSON формате) либо просто короткую ссылку(в текстовом формате)
+	</div>
+  </ons-page>
+</template>
+
+<template id="api-domains.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Домены
+      </div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+	<div class="answer">https://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>action=</font><font color=red>get.domains</font></div>
+	В данном случае как и во всех последующих(кроме запроса ссылок :D), все указанные выше параметры обязательны<br>
+	Ответ на запрос будет в виде<br>
+	<div class="answer">{"public":{"11":"q32.pw","1":"q32.ru"},"private":[]}</div>
+	где в свойстве public содержатся те самые два бесплатных домена, а во втором свойстве private содержатся все домены которые добавлены пользователем.
+	</div>
+  </ons-page>
+</template>
+
+<template id="api-links.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Список ссылок
+			</div>
+		</ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			<div class="answer">https://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>action=</font><font color=red>get.links</font></div>
+			еще один запрос в котором есть дополнительные параметры, и они следующие:<br>
+			<font color=green>folder=</font><font color=red>id категории</font> - папка из которой запрашиваются ссылки. Если параметр не указывать то ссылки запрашиваются из папки "Без категории".
+			<font color=green>page=</font><font color=red>номер страницы</font> - да да, именно страницы. По достижению определенного количества папка разбивается на страницы. И разумеется при запросе ссылок данная информация приходит в ответе<br>
+			Ответ на запрос ссылок из пустой папки:<br>
+			<div class="answer">{links: [], page: 1, total_page: 0}</div>
+			Приходит ответ что ссылок нет, страница первая и она же единственная, ну и разделения на страницы пока нет(0 страниц потому что даже ссылки нет ни одной). А вот если запросить не из пустой папки:<br>
+			<div class="answer">{"links":[{"id":"435929","link":"http:\/\/4pda.ru","title":"4pda","description":"ссыль на главную","folder":"56027","domain":"q32.ru","echo":"http:\/\/q32.ru\/bNIj"}],"page":1,"total_page":1}</div>
+			Каждая ссылка имеет свой уникальный ID, link содержит в себе оригинальную ссылку, с title, description,folder,domain все понятно. Остается только echo, которое и содержит сокращенную ссылку. Ну а далее так же - страница первая, всего страниц - 1.<br>
+			Как и раньше, дополнительные параметры добавляются с помощью символа &.<br>
+			<u><b>ВНИМАНИЕ!</b></u> Если не указываете параметр страницы, то приходят <u>не все</u> ссылки, а только ссылки с первой страницы (на одной странице максимум 15 ссылок)!
+		</div>
+	</ons-page>
+</template>
+
+<template id="api-dirs.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Запрос папок
+      </div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+	<div class="answer">https://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>action=</font><font color=red>get.categories</font></div>
+В данном случае все просто, никаких дополнительных параметров, никаких пользовательских данных. Ответ выглядит подобным образом:<br>
+<div class="answer">{"55588":"Новая категория","55589":"И еще одна для теста API :D"}</div>
+Тоесть, у нас идет просто перечисление ID:Название,ID:Название. При этом стандартная папка "Без категории"(ID=0) в ответ не входит, не забудьте ее добавить отдельно :)
+</div>
+  </ons-page>
+</template>
+
+<template id="api-dir-create.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Создание папки
+      </div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+	<div class="answer">https://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>action=</font><font color=red>add.category</font>&<font color=green>title=</font><font color=red>название</font></div>
+Опять же все обязательно, от пользователя зависит только название папки. Рекомендуется избегать использования спецефических символов. Например папка с символами < и > отображается вовсе как папка без названия. Точнее даже не просто отображается, а как раз таки добавляется без названия. Так она выглядит при запросе папок: 56029:""<br>
+При выполнении запроса на добавление папки приходит следующий ответ:<br>
+<div class="answer">{category: {id: 56032, title: "Абракадабра"}}</div>
+В ответе приходят ID и название папки.
+</div>
+  </ons-page>
+</template>
+
+<template id="api-dir-edit.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Редактирование папки
+      </div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+	<div class="answer">https://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>action=</font><font color=red>edit.category</font>&<font color=green>id=</font><font color=red>id категории</font>&<font color=green>title=</font><font color=red>название</font></div>
+Сразу стоит отметить что как и на сайте, так и по API редактирование папки это лишь ее переименование и ничего более. От пользователя требуется выбрать папку для переименования (ее ID) и ввести новое название. Ответ полностью аналогичен ответу на запрос создания папки
+<div class="answer">{category: {id: 56032, title: "Переименовано"}}</div>
+</div>
+  </ons-page>
+</template>
+
+<template id="api-dir-del.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Удаление папки
+      </div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+	<div class="answer">https://q32.link/api.php?<font color=green>key=</font><font color=red>[KEY]</font>&<font color=green>format=</font><font color=red>json</font>&<font color=green>action=</font><font color=red>edit.category</font>&<font color=green>id=</font><font color=red>id категории</font></div>
+Для удаления папки от пользователя требуется лишь указать ее ID.<br>
+Ответом будет:<br> 
+<div class="answer">{"status":"Success"}</div>
+если папка успешно удалена, или же не прийдет ничего, в случае ошибки (попробуйте удалить так папку с id=0 :D, не переживайте, папка останется :D)
+</div>
+  </ons-page>
+</template>
+  
+<template id="api-about.html">
+	<ons-page>
+	<ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        Про API
+      </div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			<b>Зачем было добавлять это в приложение?</b><br>
+			Описание API-методов в приложении сделано для тех кому это нужно. Удобнее и быстрее открыть приложение и посмотреть информацию доступную в том числе и в оффлайне. <br>
+			P.S.: Если в описании много "воды" на ваш взгляд - напишите об этом по обратной связи.
+			<hr>
+			<b>Почему это не указано на сайте?</b><br>
+			Цитирую администрацию:<br>
+			"<i>Мы не добавляли их в описание на сайте в связи с низкой заинтересованностью пользователей в API</i>"
+			<hr>
+			<b>Условные обозначения</b><br>
+			Пользовательский API-ключ обозначим как [KEY]<br>
+			Параметры в URL обращения выделены <font color=green>зеленым</font><br>
+			Значения параметров будут выделены <font color=red>красным</font><br>
+			Сервер принимает <b>GET</b>-запросы<br>
+			Запросы необходимо кодировать <small>(см. encodeURIComponent в случае JavaScript)</small><br>
+			Итак, начнем...
+	</ons-page>
+</template>  
+  
+<template id="api.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.open()">
+          <ons-icon icon="md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">
+        API от Q32
+      </div>
+    </ons-toolbar>
+<ons-list>
+	<ons-list-item modifier="chevron" onclick="fn.load('api-about.html')" tappable>
+		<div class="center">
+			Чуток подробнее про API
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-short.html')" tappable>
+		<div class="center">
+			Сокращение ссылки
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-domains.html')" tappable>
+		<div class="center">
+			Запрос доменов
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-links.html')" tappable>
+		<div class="center">
+			Запрос списка ссылок
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-dirs.html')" tappable>
+		<div class="center">
+			Запрос списка папок
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-dir-create.html')" tappable>
+		<div class="center">
+			Создание папки
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-dir-edit.html')" tappable>
+		<div class="center">
+			Редактирование папки
+		</div>
+	</ons-list-item>
+	
+	<ons-list-item modifier="chevron" onclick="fn.load('api-dir-del.html')" tappable>
+		<div class="center">
+			Удаление папки
+		</div>
+	</ons-list-item>
+</ons-list>
+
+</template>
+  
+<template id="app-settings.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Настройки приложения
+			</div>
+    </ons-toolbar>
+	<div style="text-align: center; margin:30px auto;max-width:90%">
+		<div style="display:block;height:52px;margin-top:15px;">
+			<div class="center" style="display:inline-block;padding-right:30%">
+				Ночная тема
+			</div>
+	  
+			<div class="right" style="display:inline-block">
+				<ons-switch onclick="darkMode()" id="darkModeSwitch"  ></ons-switch>
+			</div>
+		</div>
+		
+		<script>
+			$(function(){
+				if(localStorage.getItem("appTheme")=="dark"){
+					$("#darkModeSwitch").children()[0].checked=true;
+				}
+			});
+		</script>
+		
+		Смена оформления приложения на темный стиль.<hr>
+		<div style="display:block;height:52px;margin-top:15px;">
+			<div class="center" style="display:inline-block;padding-right:30%">
+				Пункт про API в меню
+			</div>
+	  
+			<div class="right" style="display:inline-block">
+				<ons-switch onclick="apiInMenu()" id="apiInMenuSwitch"  ></ons-switch>
+			</div>
+		</div>
+		
+		<script>
+			$(function(){
+				if(localStorage.getItem("APIinMenu")=="yes"){
+					$("#apiInMenuSwitch").children()[0].checked=true;
+				}
+			});
+		</script>
+		
+		Включайте только если вам необходима вся информация о предоставляемых сервисом API-методах. Информация доступна в оффлайн режиме.<hr>
+		
+		<div style="display:block;height:52px;margin-top:15px;">
+			<div class="center" style="display:inline-block;padding-right:30%">
+				Доп. параметры
+			</div>
+	  
+			<div class="right" style="display:inline-block">
+				<ons-switch onclick="needAdditional()" id="needAdditionalSwitch"  ></ons-switch>
+			</div>
+		</div>
+		
+		<script>
+			$(function(){
+				if(localStorage.getItem("additional")=="yes"){
+					$("#needAdditionalSwitch").children()[0].checked=true;
+				}
+			});
+		</script>
+		
+		Если включено, то на странице сокращения поля доп.параметров будут отображены всегда. Если выключено, то при необходимости надо будет отображать поля вручную.<hr>
+		<div style="display:block;height:52px;margin-top:15px;">
+			<div class="center" style="display:inline-block;padding-right:30%">
+				Проверка обновлений
+			</div>
+	  
+			<div class="right" style="display:inline-block">
+				<ons-switch onclick="autoUpdate()" id="autoUpdSwitch"  ></ons-switch>
+			</div>
+		</div>
+		
+		<script>
+			$(function(){
+				if(localStorage.getItem("autoUpd")=="yes"){
+					$("#autoUpdSwitch").children()[0].checked=true;
+				}
+			});
+		</script>
+		
+		Включение/выключение автоматической проверки обновлений. Если опция включена, то проверка будет выполняться при запуске приложения.<hr>
+		
+		<ons-button modifier="large" style="margin: 15px 0 15px 0" onclick="clearAllData()">Очистить сохраненные данные</ons-button>
+		Очистка всех данных приложения (API-ключ, настройки).
+	</div>
+	<hr>
+	
+	</ons-page>
+</template>
+
+<template id="dir-settings.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Настройки папок
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			Для управления папкой нажмите на нее и выберите действие во всплывающем окне, для добавления папки нажмите на плюсик внизу справа<hr>
+			<div id="wait-loading" style="display:block;text-align:center">
+			Подождите...<br>
+			<ons-icon size="50px" spin icon="md-spinner"></ons-icon>
+			</div>
+			<ons-list id="ListOfDirs"></ons-list>
+			<script>
+				requestAllCategories("settings");
+			</script>
+		</div>
+		<ons-fab position="bottom right" onclick="createDir()">
+			<ons-icon icon="md-plus"></ons-icon>
+		</ons-fab>
+	</ons-page>
+</template>
+
+<template id="api-settings.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Настройки API-ключа
+			</div>
+    </ons-toolbar>
+		
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			Приложение покажет API-ключ, который вы добавили в него при первом запуске.
+			<ons-button modifier="large" onclick="showDialog('showKey')">Показать ключ</ons-button>
+			
+			<ons-dialog id="showKey">
+				<div style="text-align: center; padding: 10px;">
+					<p id="showUserKey" style="max-width:250px;word-wrap:break-word">
+						
+					</p>
+					
+					<script>
+						APIkey=localStorage.getItem('q32apiuserskey');
+						$("#showUserKey").html(APIkey+"<br><ons-button onclick='copyToClipboard(\""+APIkey+"\")'>Скопировать</ons-button>");
+					</script>
+					
+					<p>
+						<ons-button onclick="hideDialog('showKey')">Закрыть</ons-button>
+					</p>
+				</div>
+			</ons-dialog>
+			
+			<hr>
+			Вы можете изменить добавленный ключ в случае если планируете работать с другим аккаунтом, или если у вашего аккаунта ключ был изменен (что можно сделать на сайте).
+			<ons-button modifier="large" onclick="changeMyKey()">Изменить ключ</ons-button>
+			<hr>
+			Если вы планируете не пользоваться приложением некоторое время, вы можете удалить ваш API-ключ и никто из воспользовавшихся устройством не сможет посмотреть какие ссылки есть у вас на аккаунте, или сократить их используя ваш аккаунт.
+			<ons-button modifier="large" onclick="removeMyKey()">Удалить ключ</ons-button>
+		</div>	
+	</ons-page>
+</template>
+
+<template id="novice.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Новичкам
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+				Q32 - сервис сокращения ссылок, расположенный по адресу https://q32.link позволяющий получить некоторый доход от посещений той или иной ссылки.<br>
+Т.е. у вас есть аккаунт, вы сократили ссылку и за 1000 переходов получите сколько-то рублей <small>(тарифы есть на сайте, ниже кнопка для открытия нужной страницы)</small>. Начисления идут за каждый конкретный переход, т.е. чтоб был доход с ссылки необязательно ждать пока по ней произойдет 1000 переходов. <br>
+<br>
+Возможности сервиса:<br>
+-ссылка без рекламы (мгновенный переход, не оплачивается)<br>
+-ссылки с рекламой (оплачиваются по опр. тарифам, имеется в 2-х вариантах: 15сек и 30сек задержки)+дополнительные опции <br>
+-для ссылок можно создать категории(папки) для некоторого порядка<br>
+-возможен вывод на Webmoney(WMR) и QIWI(руб). О выводе: минимум 15р на Webmoney, минимум 100р на QIWI с комиссией 5%. Выплаты осуществляются по заказу в течении 7 дней включительно.<br>
+-есть небольшая статистика: график за месяц(переходов, доход) и статистика по дням (день,уникальных посетителей, всего переходов, всего получено) <br>
+	<a href="https://q32.link/page/price.html"><ons-button modifier="large">Расценки с сайта</ons-button></a>
+			</div>
+	</ons-page>
+</template>
+
+<template id="faq.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				FAQ
+			</div>
+    </ons-toolbar>
+		<ons-list>
+			
+			<ons-list-item modifier="chevron" onclick="fn.load('what-is-api.html')" tappable>
+				<div class="center">
+					<span class="list-item__title"><b>Что за API-ключ?</b></span><span class="list-item__subtitle">Что за API-ключ, зачем он и где его взять.</span>
+				</div>
+			</ons-list-item>
+			
+			<ons-list-item modifier="chevron" onclick="fn.load('prepare-for-use.html')" tappable>
+				<div class="center">
+					<span class="list-item__title"><b>Нужно ли что-то кроме API-ключа?</b></span><span class="list-item__subtitle">Что еще <u>стоит подготовить</u>, прежде чем использовать приложение</span>
+				</div>
+			</ons-list-item>
+			
+			<ons-list-item modifier="chevron" onclick="fn.load('bad-link-name.html')" tappable>
+				<div class="center">
+					<span class="list-item__title"><b>Пустое или некорректное название ссылки?</b></span><span class="list-item__subtitle">Проблема не в приложении.</span>
+				</div>
+			</ons-list-item>
+			
+			<ons-list-item modifier="chevron" onclick="fn.load('link-info-incorrect.html')" tappable>
+				<div class="center">
+					<span class="list-item__title"><b>Неполное описание?</b></span><span class="list-item__subtitle">Тоже самое возможно с названием и исходной ссылкой</span>
+				</div>
+			</ons-list-item>
+			
+			<ons-list-item modifier="chevron" onclick="fn.load('app-bugs.html')" tappable>
+				<div class="center">
+					<span class="list-item__title"><b>Что-то не работает?</b></span><span class="list-item__subtitle">Известные на текущий момент баги.</span>
+				</div>
+			</ons-list-item>
+			
+			<ons-list-item modifier="chevron" onclick="fn.load('edit-link.html')" tappable>
+				<div class="center">
+					<span class="list-item__title"><b>Как отредактировать ссылку?</b></span><span class="list-item__subtitle">Изменение названия, описания, домена и папки</span>
+				</div>
+			</ons-list-item>			
+		</ons-list>
+	</ons-page>
+</template>
+
+<template id="what-is-api.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				API-ключ
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+				Все просто.
+API-ключ позволяет определить вас как пользователя сервиса при использовании стороннего ПО. В данном случае имеется ввиду то, что Q32 имеет только сайт, и не разрабатывал программных клиентов для Android или iOS (и т.д.). Вместо этого Q32 предоставили пользовательские API, при помощи которых любой желающий может сделать свое приложение/скрипт и благодаря этим самым API настроить связь с серверами Q32. Таким образом API-ключ необходим чтобы вы могли работать со своим аккаунтом через данное приложение.
+			</div>
+	</ons-page>
+</template>
+
+<template id="prepare-for-use.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Подготовка
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+				Честно говоря, приложением можно пользоваться "сходу", добавив свой API-ключ при первом запуске, однако есть одна рекомендация (от себя):<br>
+				Зайдите на сайт сервиса и попробуйте сократить ссылку на сайте. Вы увидите те же поля (ссылка, категория, домен, название и описание) которые можно будет настроить и в приложении. Но в отличие от приложения там есть еще возможность выбрать тариф. И если его не выбирать то выбранной опцией останется "Основной тариф аккаунта". Чтобы узнать какой он и изменить его, на сайте идем в <b>"Настройки">"Тариф"</b> и настраиваем так как вам необходимо. Интересно что меняется в зависимости от настроек? Откройте соседней вкладкой ссылку на "Цены" и настройте свой тариф в соответствии со своими желаниями.<br><br>
+Небольшое примечание: при включенной опции "Всплывающая реклама" иногда могут наблюдаться проблемы при переходе по ссылкам с мобильных устройств.
+			</div>
+	</ons-page>
+</template>
+
+<template id="bad-link-name.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Неверное название
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+				Данная ситуация может возникать <b>только</b> если Вы <b>не используете</b> дополнительные параметры.<br>
+					Дело в том что минимум для сокращения ссылки - сама ссылка. Если Вы не указываете ее название в дополнительных параметрах - сервер Q32 пытается сам получить это название из названия страницы, доступной по указанной Вами ссылке. Если серверу это не удается - у ссылки нет названия, если удается - название может быть некорректным из за разницы в кодировках (например сервер понимает только UTF-8, а на страница по указанной Вами ссылке содержит данные в кодировке Windows-1251 (с кириллицей).
+			</div>
+	</ons-page>
+</template>
+
+<template id="link-info-incorrect.html">
+	<ons-page>
+	<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Неполная инфа
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			Прежде всего, не переживайте - с вашей ссылкой все впорядке, ни ссылку, ни название, ни описание сервис <u>не урезал</u>!<br>
+			Неполное отображение затрагивает все возможные "поля", т.е. и название, и описание, и саму исходную ссылку. Это не проблема приложения, а всего лишь своего рода ограничение для API. Конкретное значение - 255 символов. И для ссылки, и для названия и для описания сервер отправляет в приложение только первые 255 символов.<br>
+			Если все три вышеперечисленных поля содержат менее 255 символов, то они будут отображены в приложении в полном объеме, если же идет превышение - за полной исходной ссылкой(описанием) прийдется лезть на сайт.
+		</div>
+	</ons-page>
+</template>
+
+<template id="app-bugs.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Баги, о которых известно
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+				<ul>
+<li>Символ < в названии папки не уходит на сервер</li>
+<li>Невозможно создать папку с названием типа <Некое название></li>
+</ul>
+Об этих багах я знаю, и на текущий момент в поисках способов их устранения.<br>
+Вы нашли что-то еще? Сообщите о баге любым из способов обратной связи<br><br>
+	<ons-button onclick="fn.load('feedback.html')" >Обратная связь</ons-button>
+			</div>
+	</ons-page>
+</template>
+
+<template id="edit-link.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Изменение ссылки
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			Внезапно потребовалось переместить ссылку в другую папку, или что-то изменить?<br>
+			Увы на текущий момент такого API у сервиса нету, но это не значит что нет выхода кроме как заходить на сайт и редактировать ссылку там.<br>
+			Зайдите в <b>Мои ссылки</b>, перейдите в нужную папку и нажмите на нужную ссылку. Прокрутите информацию о ней вниз и скопируйте оригинальную ссылку.
+			Перейдите в <b>Сокращение</b>, вставьте ссылку-оригинал в поле для сокращения. Включите дополнительные параметры и введите вновь все что было (название, описание, домен*, папка) но уже с необходимыми изменениями. Нажмите <b>Сократить</b> и дождитесь результата. Готово :) Короткая ссылка осталась такой же, однако теперь она с измененными вами данными (на другом домене*, в другой папке, с другим названием или описанием).<hr>
+			* - изменение таким образом домена произойдет "на удачу", т.к. ID ссылки (та часть, что идет после домена) не изменится, а вот домен изменится. И никто не гарантирует Вам, что на другом домене данный ID еще свободен. Если таковой занят, то вы получите, казалось бы желаемый результат, но по сокращенной ссылке будет открываться совсем другое.
+		</div>
+	</ons-page>
+</template>
+
+<template id="about.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				О приложении
+			</div>
+    </ons-toolbar>
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			Разработано Ryoidenshi Aokigahara в 2017 году под лицензией MIT.<br>
+			<a href="https://choosealicense.com/licenses/mit/"><ons-button modifier="large">Содержание MIT лицензии (англ.)</ons-button></a><br><br>
+			Официальная страничка приложения :)
+			<br>
+			<a href="https://rj-l.000webhostapp.com/q32/"><ons-button modifier="large">Страница приложения</ons-button></a><br>
+			Остальная контактная информация доступна в разделе обратной связи.
+			<hr>
+			<ons-button modifier="large" onclick='whatsNew()'>Список изменений в версиях</ons-button><br><br>
+			<ons-button modifier="large" onclick='$("#RDetails").slideToggle(300)'>С помощью чего сделано?</ons-button>
+			<div id="RDetails" style="display:none">
+			<hr>
+			Данное приложение не является официальным и работает исключительно по API предоставленным сервисом Q32.link <br>
+			<a href="https://q32.link"><ons-button modifier="large">Сайт сервиса</ons-button></a>
+			<hr>
+			Приложение собрано с помощью Serakont App Builder 2<br>
+			<a href="https://play.google.com/store/apps/details?id=com.serakont.appbuilder2"><ons-button modifier="large">Google Play</ons-button></a>
+			<hr>
+			Интерфейс построен с помощью фреймворка OnsenUI<br>
+			<a href="https://onsen.io"><ons-button modifier="large">Сайт фреймворка</ons-button></a><hr>
+			Приложение Open Source (с открытым исходным кодом), свяжитесь со мной любым удобным способом, если хотите взглянуть на исходники :)
+			</div>
+		</div>
+		
+		<ons-dialog id="what-new">
+			<div style='text-align: center; padding: 10px;'>
+				<p>
+					<div id="wait-loading" style="display:none;margin:30px auto;text-align:center">
+						Подождите...<br>
+						<ons-icon size="50px" spin icon="md-spinner"></ons-icon>
+					</div>
+					<div id="newsText" style="height:400px;overflow:scroll;"></div>
+				</p>
+				<p>
+					<ons-button onclick='hideDialog("what-new")'>Закрыть</ons-button>
+                </p>
+			</div>
+		</ons-dialog>
+		
+	</ons-page>
+</template>
+ 
+<template id="feedback.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Обратная связь
+			</div>
+    </ons-toolbar>
+		
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+			Чтобы оставить отзыв, отправить сообщение об ошибке или написать пожелание воспользуйтесь одной из ссылок ниже:<br><br>
+			
+			<a href="https://vk.com/q32mobile"><ons-button modifier="large"> Вконтакте </ons-button></a><br><br>
+			<a href="http://4pda.ru/forum/index.php?showuser=4796618"><ons-button modifier="large"> 4PDA </ons-button></a><br><br>
+			<a href="https://twitter.com/RyoidenshiAD"><ons-button modifier="large"> Twitter </ons-button></a><br><br>
+			<a href="http://t.me/RyoidenshiAokigahara"><ons-button modifier="large"> Telegram </ons-button></a><br><br>
+			<a href="https://wire.com"><ons-button modifier="large"> Wire (@ryoidenshiaokigahara) </ons-button></a><br><br>
+			<a href="mailto:ryoidenshiaokigahara@gmail.com"><ons-button modifier="large"> E-mail </ons-button></a><br><br>
+		</div>
+	</ons-page>
+</template>
+ 
+ <template id="future.html">
+	<ons-page>
+		<ons-toolbar>
+			<div class="left">
+				<ons-toolbar-button onclick="fn.open()">
+					<ons-icon icon="md-menu"></ons-icon>
+				</ons-toolbar-button>
+			</div>
+			<div class="center">
+				Запланировано
+			</div>
+    </ons-toolbar>
+		
+		<div style="text-align: center; margin:30px auto;max-width:90%">
+		<ons-button modifier="large" onclick='showDialog("voting-help")'><ons-icon icon="md-help-outline" style="padding-right:10px;font-size:18px"></ons-icon>Справка</ons-button>
+		</div>
+		
+		<div id="wait-loading" style="display:none;margin:30px auto;text-align:center">
+			Подождите...<br>
+			<ons-icon size="50px" spin icon="md-spinner"></ons-icon>
+		</div>
+		
+		<ons-dialog id="voting-help">
+			<div style='text-align: center; padding: 10px;'>
+				<p>
+					Ниже указаны все запланированные на текущий момент возможности. Нажмите на интересующий вас пункт чтобы узнать подробности и проголосовать <b>За</b> или <b>Против</b>.<hr>
+					Во избежание "накручивания" голосов кнопки исчезнут сразу после того, как вы проголосуете. После этого вы сможете только забрать свой голос.<br>
+					Забрав голос вы вновь получите возможность проголосовать <b>За</b> или <b>Против</b>. 
+				</p>
+				<p>
+					<ons-button onclick='hideDialog("voting-help")'>Закрыть</ons-button>
+                </p>
+			</div>
+		</ons-dialog>
+		
+		<div id="featureContent" style="text-align: center; margin:30px auto;max-width:90%">
+		</div>
+
+		<script>
+			getFutureVotes();
+		</script>
+	
+	</ons-page>
+</template>
+ 
+</body>
+</html>
