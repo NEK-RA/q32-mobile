@@ -1,14 +1,17 @@
-<script>
-window.onload=function(){
-	isFS=localStorage.getItem("isFirstStart?");
-	if(isFS==null){
-		document.getElementById("redir").innerHTML="<meta http-equiv=refresh content='0.1;URL=welcome.html'>";
-	}else{
-		document.getElementById("redir").innerHTML="<meta http-equiv=refresh content='0.1;URL=app.html'>";
-	}
-}
-</script>
-<body>
-<div id="redir">
-</div>
-</body>
+<!DOCTYPE html>
+  <body>
+    <script>
+      window.onload = function () {
+        isFS = localStorage.getItem("isFirstStart?");
+        if (isFS == null) {
+          location.href = "welcome.html";
+        } else {
+          location.href = "app.html";
+          if (localStorage.getItem("welcome-progress") != null) {
+            localStorage.removeItem("welcome-progress");
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

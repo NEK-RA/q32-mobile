@@ -1,200 +1,270 @@
 ﻿<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="onsen/onsenui.css">
-  <link rel="stylesheet" href="onsen/onsen-css-components.min.css">
-  <script src="onsen/onsenui.min.js"></script>
-  <script src="jq.js"></script>
-  <script src="welcome.js"></script>
-  <meta charset="UTF-8">
- </head>
- 
- <body>
- 
-<ons-splitter>
-	<ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
-		<ons-page>
-			<img src="logo.png" width="200px" style="padding:10% 10px 15% 10px">
-			<ons-list id="welcome-menu-list">
-				<ons-list-item onclick="fn.load('welcome.html')" tappable id="progres25">Приветствие</ons-list-item>
-				<ons-list-item onclick="fn.load('novice.html')" tappable id="progres50">Знакомство</ons-list-item>
-				<ons-list-item onclick="fn.load('enterAPI.html')" tappable id="progres75">API-ключ</ons-list-item>
-				<ons-list-item onclick="fn.load('final.html')" tappable id="progres100">Завершение</ons-list-item>
-			</ons-list>
-			<p style="text-align:center;opacity:0.4"><b>v 1.1.3</b></p>
-		</ons-page>
-	</ons-splitter-side>
-	<ons-splitter-content id="content" page="welcome.html"></ons-splitter-content>
-</ons-splitter>
- 
-<template id="welcome.html">
-	<ons-page>
-		<ons-toolbar>
-			<div class="left">
-				<ons-toolbar-button onclick="fn.open()">
-					<ons-icon icon="md-menu"></ons-icon>
-				</ons-toolbar-button>
-			</div>
-		<div class="center">
-			Приветствие
-		</div>
-    </ons-toolbar>
-	
-	<script>
-		setProgress("welcome");
-		checkMenu();
-	</script>
-	
-	<div style="text-align: center; margin:25% auto;max-width:90%">
-		<h3>Здравствуй пользователь :)</h3><br>
-		Это первый запуск приложения и сейчас ты будешь ознакомлен с ним, а так же будут произведены необходимые настройки.<br><br>
-		Q32 Mobile это неоффициальное приложение для сервиса сокращения ссылок Q32.<br>
-		Знаком ли ты с данным сервисом, или тебе о нем рассказать?<br><br><br>
-		<ons-button style='margin-right:10px' onclick="fn.load('enterAPI.html')">Да, знаком</ons-button><ons-button style='margin-left:10px' onclick="fn.load('novice.html')">Нет, расскажи</ons-button>		
-	</div>
-	
-	</ons-page>
-</template>
+  <head>
+		<title>Q32 Mobile Intro</title>
+    <link rel="stylesheet" href="onsen/onsenui.css" />
+    <link rel="stylesheet" href="onsen/onsen-css-components.min.css" />
+    <script src="onsen/onsenui.min.js"></script>
+    <script src="jq.js"></script>
+    <script src="welcome.js"></script>
+    <script src="file:///android_asset/android.js"></script>
+    <meta charset="UTF-8" />
+  </head>
 
-<template id="enterAPI.html">
-	<ons-page>
-		<ons-toolbar>
-			<div class="left">
-				<ons-toolbar-button onclick="fn.open()">
-					<ons-icon icon="md-menu"></ons-icon>
-				</ons-toolbar-button>
-			</div>
-		<div class="center">
-			API-ключ
-		</div>
-    </ons-toolbar>
-	<script>
-		setProgress("API");
-		checkMenu();
-	</script>
-	
-	<div style="text-align: center; margin:25% auto;max-width:90%">
-		Теперь вам необходимо добавить в приложение свой API-ключ.
-		<br><br>
-		<ons-button modifier="large" onclick="showDialog('where')">Где взять API-ключ?</ons-button>
-		<br><br>
-		<ons-button modifier="large" onclick="getAPI()">Ввод API-ключа</ons-button>
-		<br><br>
-		
-		<div id="wait-loading" style="display:none;text-align:center">
-			Подождите...<br>
-			<ons-icon size="50px" spin icon="md-spinner"></ons-icon>
-		</div>
-		
-		<div id="continue-button" style="display:none">
-			<ons-button modifier="large" onclick="fn.load('final.html')">Продолжить</ons-button>
-		</div>
-	</div>
-	
-	<ons-dialog id="where">
-		<div style="text-align: center; padding: 10px;">
-			<p>
-				1. Зайдите на свой аккаунт<br>
-				2. Откройте раздел Инструменты (с моб. устройств там только характерная иконка с отверткой и ключом)<br>
-				3. Откройте вкладку API<br>
-				4. В первом же прямоугольнике видим: <i><b>определенный набор символов</b> - Ваш уникальный ключ для доступа к API.</i><br>
-				5. Копируете данный набор символов (ключ) и добавляете в приложение.
-			</p>
-			<p>
-				<ons-button onclick="hideDialog('where')">Закрыть</ons-button>
-			</p>
-		</div>
-	</ons-dialog>
-	
-	
-	</ons-page>
-</template>
+  <body>
+    <ons-splitter>
+      <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+        <ons-page>
+          <img
+            src="logo.png"
+            width="200px"
+            style="padding: 10% 10px 15% 10px"
+            alt="logo"
+          />
+          <ons-list id="welcome-menu-list">
+            <ons-list-item
+              onclick="fn.load('welcome.html')"
+              tappable
+              id="progres25"
+              >Приветствие</ons-list-item
+            >
+            <ons-list-item
+              onclick="fn.load('novice.html')"
+              tappable
+              id="progres50"
+              >Знакомство</ons-list-item
+            >
+            <ons-list-item
+              onclick="fn.load('enterAPI.html')"
+              tappable
+              id="progres75"
+              >API-ключ</ons-list-item
+            >
+            <ons-list-item
+              onclick="fn.load('final.html')"
+              tappable
+              id="progres100"
+              >Завершение</ons-list-item
+            >
+          </ons-list>
+          <p style="text-align: center; opacity: 0.4; font-weight: bold">
+            v <span id="appVer">1.2.1</span>
+          </p>
+        </ons-page>
+      </ons-splitter-side>
+      <ons-splitter-content
+        id="content"
+        page="welcome.html"
+      ></ons-splitter-content>
+    </ons-splitter>
 
-<template id="novice.html">
-	<ons-page>
-		<ons-toolbar>
-			<div class="left">
-				<ons-toolbar-button onclick="fn.open()">
-					<ons-icon icon="md-menu"></ons-icon>
-				</ons-toolbar-button>
-			</div>
-		<div class="center">
-			Знакомство с сервисом
-		</div>
-    </ons-toolbar>
-	
-	<script>
-		setProgress("novice");
-		checkMenu();
-	</script>
-	
-	<div style="text-align: center; margin:25px auto;max-width:90%">
-		Q32 - сервис сокращения ссылок, позволяющий заработать на переходах.<br>
-		Есть 2 режима сокращения: с рекламой и без нее. Для режима с рекламой есть возможность настроить таймер(15 или 30 секунд) и тип отображаемой рекламы, пока тикает таймер. Для режима без рекламы соответственно не будет никакой рекламы.<br>
-		По истечению таймера сервис выдает простенькую капчу, в итоге вы будете знать что скорее всего по вашей ссылке перешел именно человек :)<br>
-		Цены на сайте указаны за 1000 переходов<br><br>
-		<a href="https://q32.link/page/price.html"><ons-button modifier="large">Посмотреть цены</ons-button></a><br><br>
-		Тоесть если по одной вашей ссылке перейдет 1000 человек, вы получите на баланс сумму указанную по тарифу. Однако сразу стоит отметить, что начисления идут за <u>каждый</u> переход, поэтому если все ваши ссылки работают по одному тарифу, и в сумме по ним перейдет 1000 человек, то на баланс накапает указанная в тарифах сумма :)<br>
-		Вдобавок ко всему у сервиса есть реферальная программа:<br>
-		Вы будете получать 5% от дохода приглашенного вами человека.<br><br>
-		Выплаты производятся в течение 7 дней на следующие платежные системы:<br>
-		- Webmoney (минимум 15р.)<br>
-		- AdvCash (минимум 50р.)<br>
-		- Payeer (минимум 50р.)<br>
-		- Qiwi (минимум 100р.)<br><br>
-		
-		<a href="https://q32.link/?ref=17245"><ons-button modifier="large">Регистрация</ons-button></a><br><br>
-		<ons-button modifier="large" onclick="fn.load('enterAPI.html')">Продолжить настройку</ons-button>
-	</div>
-	
-	</ons-page>
-</template>
+    <template id="welcome.html">
+      <ons-page>
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="md-menu"></ons-icon>
+            </ons-toolbar-button>
+          </div>
+          <div class="center">Приветствие</div>
+        </ons-toolbar>
 
-<template id="final.html">
-	<ons-page>
-		<ons-toolbar>
-			<div class="left">
-				<ons-toolbar-button onclick="fn.open()">
-					<ons-icon icon="md-menu"></ons-icon>
-				</ons-toolbar-button>
-			</div>
-		<div class="center">
-			Завершение
-		</div>
-    </ons-toolbar>
-	
-	<script>
-		setProgress("final");
-		checkMenu();
-	</script>
-	
-	<div style="text-align: center; margin:25% auto;max-width:90%">
-		Завершение настройки<br>
-		Если вы уже пользовались сервисом раннее, не забудьте заглянуть в настройки приложения - там можно будет включить постоянное отображение доп.параметров для ссылки.<br><br><br>
-		<div style="display:block;height:52px;margin-top:15px;">
-			<div class="center" style="display:inline-block;padding-right:30%">
-				Включить ночную тему
-			</div>
-	  
-			<div class="right" style="display:inline-block">
-				<ons-switch id="darkModeSwitch"></ons-switch>
-			</div>
-		</div>
-		<div style="display:block;height:52px;margin-top:15px;">
-			<div class="center" style="display:inline-block;padding-right:30%">
-				Информация по API
-			</div>
-	  
-			<div class="right" style="display:inline-block">
-				<ons-switch id="APISwitch"></ons-switch>
-			</div>
-		</div>
-		
-		<ons-button modifier="large" onclick="finalSetup()">Готово!</ons-button>
-	</div>
-	
-	</ons-page>
-</template>
- 
- </body>
- </html>
+        <script>
+          setProgress("welcome");
+          checkMenu();
+        </script>
+
+        <div style="text-align: center; margin: 25% auto; max-width: 90%">
+          <h3>Здравствуй пользователь :)</h3>
+          <br />
+          Это первый запуск приложения и сейчас ты будешь ознакомлен с ним, а
+          так же будут произведены необходимые настройки.<br /><br />
+          Q32 Mobile это неоффициальное приложение для сервиса сокращения ссылок
+          Q32.<br />
+          Знаком ли ты с данным сервисом, или тебе о нем рассказать?<br /><br /><br />
+          <ons-button
+            style="margin-right: 10px"
+            onclick="fn.load('enterAPI.html')"
+            >Да, знаком</ons-button
+          ><ons-button
+            style="margin-left: 10px"
+            onclick="fn.load('novice.html')"
+            >Нет, расскажи</ons-button
+          >
+        </div>
+      </ons-page>
+    </template>
+
+    <template id="enterAPI.html">
+      <ons-page>
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="md-menu"></ons-icon>
+            </ons-toolbar-button>
+          </div>
+          <div class="center">API-ключ</div>
+        </ons-toolbar>
+        <script>
+          setProgress("API");
+          checkMenu();
+        </script>
+
+        <div style="text-align: center; margin: 25% auto; max-width: 90%">
+          Теперь вам необходимо добавить в приложение свой API-ключ.
+          <br /><br />
+          <ons-button modifier="large" onclick="showDialog('where')"
+            >Где взять API-ключ?</ons-button
+          >
+          <br /><br />
+          <ons-button modifier="large" onclick="getAPI()"
+            >Ввод API-ключа</ons-button
+          >
+          <br /><br />
+
+          <div id="wait-loading" style="display: none; text-align: center">
+            Подождите...<br />
+            <ons-icon size="50px" spin icon="md-spinner"></ons-icon>
+          </div>
+
+          <br /><br />
+          <br /><br />
+
+          Так же вы можете восстановить резервную копию если делали ее раннее<br /><br />
+          <ons-button modifier="large" onclick="offlineRestore()">
+            <ons-icon
+              icon="md-floppy"
+              style="padding-right: 10px; font-size: 18px"
+            ></ons-icon>
+            Восстановление данных
+          </ons-button>
+        </div>
+
+        <ons-dialog id="where">
+          <div style="text-align: center; padding: 10px">
+            <p>
+              1. Зайдите на свой аккаунт<br />
+              2. Откройте раздел Инструменты (с моб. устройств там только
+              характерная иконка с отверткой и ключом)<br />
+              3. Откройте вкладку API<br />
+              4. В первом же прямоугольнике видим:
+              <em><strong>определенный набор символов</strong> - Ваш уникальный ключ для
+                доступа к API.</em><br />
+              5. Копируете данный набор символов (ключ) и добавляете в
+              приложение.
+            </p>
+            <p>
+              <ons-button onclick="hideDialog('where')">Закрыть</ons-button>
+            </p>
+          </div>
+        </ons-dialog>
+      </ons-page>
+    </template>
+
+    <template id="novice.html">
+      <ons-page>
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="md-menu"></ons-icon>
+            </ons-toolbar-button>
+          </div>
+          <div class="center">Знакомство с сервисом</div>
+        </ons-toolbar>
+
+        <script>
+          setProgress("novice");
+          checkMenu();
+        </script>
+
+        <div style="text-align: center; margin: 25px auto; max-width: 90%">
+          Q32 - сервис сокращения ссылок, позволяющий заработать на
+          переходах.<br />
+          Есть 2 режима сокращения: с рекламой и без нее. Для режима с рекламой
+          есть возможность настроить таймер(15 или 30 секунд) и тип отображаемой
+          рекламы, пока тикает таймер. Для режима без рекламы соответственно не
+          будет никакой рекламы.<br />
+          По истечению таймера сервис выдает простенькую капчу, в итоге вы
+          будете знать что скорее всего по вашей ссылке перешел именно человек
+          :)<br />
+          Цены на сайте указаны за 1000 переходов<br /><br />
+          <a href="https://q32.link/page/price.html?ref=17245"
+            ><ons-button modifier="large">Посмотреть цены</ons-button></a
+          ><br /><br />
+          Тоесть если по одной вашей ссылке перейдет 1000 человек, вы получите
+          на баланс сумму указанную по тарифу. Однако сразу стоит отметить, что
+          начисления идут за <u>каждый</u> переход, поэтому если все ваши ссылки
+          работают по одному тарифу, и в сумме по ним перейдет 1000 человек, то
+          на баланс накапает указанная в тарифах сумма :)<br />
+          Вдобавок ко всему у сервиса есть реферальная программа:<br />
+          Вы будете получать 5% от дохода приглашенного вами человека.<br /><br />
+          Выплаты производятся в течение 7 дней на следующие платежные
+          системы:<br />
+          - Webmoney (минимум 30р.)<br />
+          - AdvCash (минимум 50р.)<br />
+          - Payeer (минимум 50р.)<br />
+          - Qiwi (минимум 50р.)<br /><br />
+
+          <a href="https://q32.link/?ref=17245"
+            ><ons-button modifier="large">Регистрация</ons-button></a
+          ><br /><br />
+          <ons-button modifier="large" onclick="fn.load('enterAPI.html')"
+            >Продолжить настройку</ons-button
+          >
+        </div>
+      </ons-page>
+    </template>
+
+    <template id="final.html">
+      <ons-page>
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="md-menu"></ons-icon>
+            </ons-toolbar-button>
+          </div>
+          <div class="center">Завершение</div>
+        </ons-toolbar>
+
+        <script>
+          setProgress("final");
+          checkMenu();
+        </script>
+
+        <div style="text-align: center; margin: 25% auto; max-width: 90%">
+          Завершение настройки<br />
+          Если вы уже пользовались сервисом раннее, не забудьте заглянуть в
+          настройки приложения - там можно будет включить постоянное отображение
+          доп.параметров для ссылки.<br /><br /><br />
+          <div style="display: block; height: 52px; margin-top: 15px">
+            <div
+              class="center"
+              style="display: inline-block; padding-right: 30%"
+            >
+              Включить ночную тему
+            </div>
+
+            <div class="right" style="display: inline-block">
+              <ons-switch id="darkModeSwitch"></ons-switch>
+            </div>
+          </div>
+          <div style="display: block; height: 52px; margin-top: 15px">
+            <div
+              class="center"
+              style="display: inline-block; padding-right: 30%"
+            >
+              Информация по API
+            </div>
+
+            <div class="right" style="display: inline-block">
+              <ons-switch id="APISwitch"></ons-switch>
+            </div>
+          </div>
+
+          <ons-button modifier="large" onclick="finalSetup()"
+            >Готово!</ons-button
+          >
+        </div>
+      </ons-page>
+    </template>
+  </body>
+</html>
